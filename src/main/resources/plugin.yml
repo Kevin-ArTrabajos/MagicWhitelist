@@ -1,0 +1,9 @@
+name: MagicWhitelist
+version: '1.0-SNAPSHOT'
+main: me.TheNocht.magicWhitelist.MagicWhitelist
+api-version: '1.20'
+prefix: MagicWhitelist
+load: STARTUP
+authors: [ TheNocht ]
+description: MagicWhitelist
+website: https://github.com/Kevin-ArTrabajos
