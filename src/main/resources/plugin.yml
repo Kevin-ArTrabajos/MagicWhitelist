@@ -7,3 +7,13 @@ load: STARTUP
 authors: [ TheNocht ]
 description: MagicWhitelist
 website: https://github.com/Kevin-ArTrabajos
+commands:
+  magicwhitelist:
+    description: MagicWhitelist main command
+    usage: "Usage /magicwhitelist \n   add [name] <role>\n   remove [name]\n   list\n   setLevel [level]\n   reload"
+    permission: magicwhitelist.admin
+    aliases: [ mwl ]
+permissions:
+  magicwhitelist.admin:
+    description: MagicWhitelist admin permission
+    default: op

@@ -1,4 +1,4 @@
-package me.TheNocht.magicWhitelist;
+package me.TheNocht.magicWhitelist.ws;
 
 import javax.websocket.*;
 import java.net.URI;
