@@ -1,5 +1,5 @@
 name: MagicWhitelist
-version: '1.0-SNAPSHOT'
+version: '1.0'
 main: me.TheNocht.magicWhitelist.MagicWhitelist
 api-version: '1.20'
 prefix: MagicWhitelist
@@ -10,10 +10,21 @@ website: https://github.com/Kevin-ArTrabajos
 commands:
   magicwhitelist:
     description: MagicWhitelist main command
-    usage: "Usage /magicwhitelist \n   add [name] <role>\n   remove [name]\n   list\n   setLevel [level]\n   reload"
+    usage: |
+      Usage /magicwhitelist or /mwl
+        add [username] [role]
+        remove [username]
+        list
+        level
+        setLevel [level]
+        parent [username]
+        setParent [username] [role]
     permission: magicwhitelist.admin
     aliases: [ mwl ]
 permissions:
   magicwhitelist.admin:
     description: MagicWhitelist admin permission
+    default: op
+  magicwhitelist.bypass:
+    description: MagicWhitelist permission to bypass the whitelist
     default: op
