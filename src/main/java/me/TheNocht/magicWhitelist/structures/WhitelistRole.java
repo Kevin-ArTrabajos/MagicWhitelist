@@ -16,4 +16,8 @@ public class WhitelistRole {
         this.level = 0;
         this.color = "<" + color + ">";
     }
+
+    public String n() {
+        return name.toUpperCase();
+    }
 }

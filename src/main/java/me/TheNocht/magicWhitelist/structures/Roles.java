@@ -5,15 +5,15 @@ import java.util.List;
 
 public record Roles() {
     public static final WhitelistRole DEFAULT = new WhitelistRole("default", "white");
-    public static final WhitelistRole PLAYER = new WhitelistRole("player", 1, "green");
-    public static final WhitelistRole DEV = new WhitelistRole("developer", 2, "blue");
+    public static final WhitelistRole PLAYER = new WhitelistRole("player", 1, "dark_purple");
+    public static final WhitelistRole STAFF = new WhitelistRole("staff", 2, "blue");
     public static final WhitelistRole ADMIN = new WhitelistRole("admin", 3, "red");
 
     public static WhitelistRole getRole(String name) throws Exception {
         return switch (name.toLowerCase()) {
             case "default" -> DEFAULT;
             case "player" -> PLAYER;
-            case "developer" -> DEV;
+            case "staff" -> STAFF;
             case "admin" -> ADMIN;
             default -> throw new Exception("Invalid role");
         };
@@ -23,7 +23,7 @@ public record Roles() {
         return switch (level) {
             case 0 -> DEFAULT;
             case 1 -> PLAYER;
-            case 2 -> DEV;
+            case 2 -> STAFF;
             case 3 -> ADMIN;
             default -> throw new Exception("Invalid role");
         };
@@ -33,7 +33,7 @@ public record Roles() {
         return switch (level) {
             case 0 -> DEFAULT.name;
             case 1 -> PLAYER.name;
-            case 2 -> DEV.name;
+            case 2 -> STAFF.name;
             case 3 -> ADMIN.name;
             default -> "invalid";
         };
@@ -44,6 +44,6 @@ public record Roles() {
     }
 
     public static Collection<String> list() {
-        return List.of(DEFAULT.name, PLAYER.name, DEV.name, ADMIN.name);
+        return List.of(DEFAULT.n(), PLAYER.n(), STAFF.n(), ADMIN.n());
     }
 }

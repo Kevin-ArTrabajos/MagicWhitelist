@@ -13,7 +13,6 @@ total desde un Proveedor externo a Minecraft
 ## TODO
 
 - [X] Funcionamiento principal
+- [X] Implementacion sqlite para datos persistentes
 - [ ] Conectar depuracion al servidor de mc
-- [ ] Cliente WebSocket
-- [ ] Implementacion sqlite para los usuarios
-- [ ] Api del WebSocket
+- [ ] Server WebSocket para control externo

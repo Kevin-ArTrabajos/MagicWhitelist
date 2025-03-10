@@ -56,7 +56,7 @@ public class MagicWhitelistCommand implements CommandExecutor {
             var players = listRolesI.next();
             var role = players.get(0).role;
 
-            returnList.append("-%s%s<reset>:\n".formatted(role.color, role.name));
+            returnList.append("-%s%s<reset>:\n".formatted(role.color, role.n()));
             returnList.append(String.join("%s, <reset>", players.stream().map(player -> player.username).toList()).formatted(role.color)).append("\n");
         }
 
@@ -89,8 +89,10 @@ public class MagicWhitelistCommand implements CommandExecutor {
             return;
         }
 
-        sender.sendMessage(ChatUtils.format("%s<green>Usuario %s (%s) añadido a la lista blanca del rol %s".formatted(magicWhitelist.prefix, username, player.uuid, role.name)));
-        Bukkit.broadcast(ChatUtils.format("%s<gray>Whitelisted player <gold>%s <gray>(%s) with role %s".formatted(magicWhitelist.prefix, username, player.uuid, role.name)), "magicwhitelist.admin");
+        this.magicWhitelist.databaseManager.savePlayer(player);
+
+        sender.sendMessage(ChatUtils.format("%s<green>Usuario %s <gray>(%s) <green>añadido a la lista blanca del rol %s".formatted(magicWhitelist.prefix, username, player.uuid, role.n())));
+        Bukkit.broadcast(ChatUtils.format("%s<gray>Whitelisted player <gold>%s <gray>(%s) with role %s%s<gray>.".formatted(magicWhitelist.prefix, username, player.uuid, role.color, role.n())), "magicwhitelist.admin");
     }
 
     private void remove(CommandSender sender, String[] args) {
@@ -101,14 +103,16 @@ public class MagicWhitelistCommand implements CommandExecutor {
 
         var username = args[1];
 
-        var isRemoved = whitelistManager.removePlayer(username);
+        var removedPlayer = whitelistManager.removePlayer(username);
 
-        if (!isRemoved) {
+        if (removedPlayer == null) {
             sender.sendMessage(ChatUtils.format("%s<red>Usuario %s no encontrado en la lista blanca".formatted(magicWhitelist.prefix, username)));
             return;
         }
 
-        sender.sendMessage(ChatUtils.format("%s<green>Usuario %s removido de la lista blanca".formatted(magicWhitelist.prefix, username)));
+        this.magicWhitelist.databaseManager.removePlayer(removedPlayer.uuid);
+
+        sender.sendMessage(ChatUtils.format("%s<green>Usuario %s removido de la lista blanca".formatted(magicWhitelist.prefix, removedPlayer.username)));
         Bukkit.broadcast(ChatUtils.format("%s<gray>Whitelisted player <gold>%s <gray> removed".formatted(magicWhitelist.prefix, username)), "magicwhitelist.admin");
     }
 
@@ -133,9 +137,10 @@ public class MagicWhitelistCommand implements CommandExecutor {
         }
 
         whitelistManager.setAccessLevel(newLevel);
+        this.magicWhitelist.databaseManager.setAccessLevel(newLevel);
 
-        sender.sendMessage(ChatUtils.format("%s<green>Nivel de acceso al server cambio al nivel <gold>%s <green>(%s%s<green>)".formatted(magicWhitelist.prefix, newLevel, role.color, role.name)));
-        Bukkit.broadcast(ChatUtils.format("%s<gray>Server access level changed to <gold>%s <gray>(%s%s<gray>)".formatted(magicWhitelist.prefix, newLevel, role.color, role.name)), "magicwhitelist.admin");
+        sender.sendMessage(ChatUtils.format("%s<green>Nivel de acceso al server cambio al nivel <gold>%s <green>(%s%s<green>)".formatted(magicWhitelist.prefix, newLevel, role.color, role.n())));
+        Bukkit.broadcast(ChatUtils.format("%s<gray>Server access level changed to <gold>%s <gray>(%s%s<gray>)".formatted(magicWhitelist.prefix, newLevel, role.color, role.n())), "magicwhitelist.admin");
     }
 
     private void level(CommandSender sender) {
@@ -147,7 +152,7 @@ public class MagicWhitelistCommand implements CommandExecutor {
             return;
         }
 
-        sender.sendMessage(ChatUtils.format("%s<green>El nivel de acceso es de: <gold>%d <green>(%s%s<green>)".formatted(magicWhitelist.prefix, whitelistManager.getAccessLevel(), role.color, role.name)));
+        sender.sendMessage(ChatUtils.format("%s<green>El nivel de acceso es de: <gold>%d <green>(%s%s<green>)".formatted(magicWhitelist.prefix, whitelistManager.getAccessLevel(), role.color, role.n())));
     }
 
     private void parent(@NotNull CommandSender sender, String[] args) {
@@ -156,15 +161,15 @@ public class MagicWhitelistCommand implements CommandExecutor {
             return;
         }
 
-        var player = args[1];
+        var playerName = args[1];
 
-        if (!whitelistManager.isWhitelisted(player)) {
-            sender.sendMessage(ChatUtils.format("%s<red>Jugador %s no encontrado en la lista blanca".formatted(magicWhitelist.prefix, player)));
+        if (!whitelistManager.isWhitelisted(playerName)) {
+            sender.sendMessage(ChatUtils.format("%s<red>Jugador %s no encontrado en la lista blanca".formatted(magicWhitelist.prefix, playerName)));
             return;
         }
 
-        var role = whitelistManager.getPlayer(player).role;
-        sender.sendMessage(ChatUtils.format("%s<green>El rol de %s es %s%s<green>".formatted(magicWhitelist.prefix, player, role.color, role.name)));
+        var player = whitelistManager.getPlayer(playerName);
+        sender.sendMessage(ChatUtils.format("%s<green>El rol de %s es %s%s<green>".formatted(magicWhitelist.prefix, player.username, player.role.color, player.role.n())));
     }
 
     private void setParent(@NotNull CommandSender sender, String[] args) {
@@ -195,19 +200,21 @@ public class MagicWhitelistCommand implements CommandExecutor {
         var oldRole = player.role;
         player.role = role;
 
+        this.magicWhitelist.databaseManager.updateParent(player);
+
         sender.sendMessage(ChatUtils.format("%s<green>El rol de %s cambio, de %s%s <green>a %s%s".formatted(magicWhitelist.prefix,
                 player.username,
                 oldRole.color,
-                oldRole.name,
+                oldRole.n(),
                 role.color,
-                role.name
+                role.n()
         )));
         Bukkit.broadcast(ChatUtils.format("%s<gray>Player <gold>%s <gray>role changed from %s%s <gray>to %s%s".formatted(magicWhitelist.prefix,
                 player.username,
                 oldRole.color,
-                oldRole.name,
+                oldRole.n(),
                 role.color,
-                role.name
+                role.n()
         )), "magicwhitelist.admin");
     }
 

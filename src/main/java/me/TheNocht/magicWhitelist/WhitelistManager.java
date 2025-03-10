@@ -15,7 +15,12 @@ public class WhitelistManager {
     private final Map<UUID, WhitelistedPlayer> currentPlayers = new HashMap<>();
     private int accessLevel = 0;
 
-    public WhitelistedPlayer addPlayer(String username, WhitelistRole role, CommandSender addBy) throws RuntimeException {
+    public WhitelistedPlayer addPlayer(WhitelistedPlayer player) {
+        this.currentPlayers.put(player.uuid, player);
+        return player;
+    }
+
+    public WhitelistedPlayer addPlayer(String username, WhitelistRole role, CommandSender addBy) {
         var uuid = Bukkit.getPlayerUniqueId(username);
 
         if (uuid == null) {
@@ -39,8 +44,12 @@ public class WhitelistManager {
         return true;
     }
 
-    public boolean removePlayer(String username) {
-        return this.currentPlayers.entrySet().removeIf(entry -> entry.getValue().username.equals(username));
+    public WhitelistedPlayer removePlayer(String username) {
+        var selectedPlayer = this.currentPlayers.values().stream().filter(p -> p.username.equalsIgnoreCase(username)).findFirst().orElse(null);
+        if (selectedPlayer != null) {
+            this.currentPlayers.remove(selectedPlayer.uuid);
+        }
+        return selectedPlayer;
     }
 
     public boolean isEveryoneJoineable() {
@@ -73,12 +82,12 @@ public class WhitelistManager {
         return accessLevel;
     }
 
-    public void setAccessLevel(int newDoorLevel) {
-        if (newDoorLevel < 0) {
+    public void setAccessLevel(int newAccessLevel) {
+        if (newAccessLevel < 0) {
             throw new IllegalArgumentException("Gates level cannot be negative");
         }
 
-        this.accessLevel = newDoorLevel;
+        this.accessLevel = newAccessLevel;
     }
 
     public WhitelistedPlayer getPlayer(UUID uuid) {
